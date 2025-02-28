@@ -1,0 +1,79 @@
+name: CD
+
+on:
+  pull_request:
+    branches: [ develop, main ]
+    types: [ closed ]
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: read
+
+jobs:
+  release:
+    name: Create Release
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Extract GCP version
+        id: gcp_version
+        if: hashFiles('modules/gcp/versions.tf') != ''
+        run: |
+          VERSION=$(grep -oP 'module_version\s*=\s*"\K[^"]+' modules/gcp/versions.tf || echo "0.1.0")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION-gcp" >> $GITHUB_OUTPUT
+          if [ "${{ github.base_ref }}" != "main" ]; then
+            echo "version=$VERSION-dev.$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+            echo "tag=v$VERSION-dev.$(date +%Y%m%d)-gcp" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract Azure version
+        id: azure_version
+        if: hashFiles('modules/azure/versions.tf') != ''
+        run: |
+          VERSION=$(grep -oP 'module_version\s*=\s*"\K[^"]+' modules/azure/versions.tf || echo "0.1.0")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION-azure" >> $GITHUB_OUTPUT
+          if [ "${{ github.base_ref }}" != "main" ]; then
+            echo "version=$VERSION-dev.$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+            echo "tag=v$VERSION-dev.$(date +%Y%m%d)-azure" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GCP module package
+        if: steps.gcp_version.outputs.version != ''
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: 'terraform-gcp-modules-${{ steps.gcp_version.outputs.version }}.zip'
+          directory: 'modules/gcp'
+
+      - name: Create Azure module package
+        if: steps.azure_version.outputs.version != ''
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: 'terraform-azure-modules-${{ steps.azure_version.outputs.version }}.zip'
+          directory: 'modules/azure'
+
+      - name: Release GCP modules
+        if: steps.gcp_version.outputs.version != '' && github.base_ref == 'main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: modules/gcp/terraform-gcp-modules-${{ steps.gcp_version.outputs.version }}.zip
+          name: GCP Modules ${{ steps.gcp_version.outputs.version }}
+          tag_name: ${{ steps.gcp_version.outputs.tag }}
+          generate_release_notes: true
+
+      - name: Release Azure modules
+        if: steps.azure_version.outputs.version != '' && github.base_ref == 'main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: modules/azure/terraform-azure-modules-${{ steps.azure_version.outputs.version }}.zip
+          name: Azure Modules ${{ steps.azure_version.outputs.version }}
+          tag_name: ${{ steps.azure_version.outputs.tag }}
+          generate_release_notes: true
