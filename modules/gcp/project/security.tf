@@ -41,3 +41,10 @@ resource "google_tags_tag_binding" "bindings" {
   parent    = "//cloudresourcemanager.googleapis.com/projects/${google_project.this.number}"
   tag_value = "tagValues/${each.value}"
 }
+
+resource "google_compute_project_cloud_armor_tier" "cloud_armor_tier_config" {
+  count = var.cloud_armor_tier == null ? 0 : 1
+
+  project          = google_project.this.project_id
+  cloud_armor_tier = var.cloud_armor_tier
+}

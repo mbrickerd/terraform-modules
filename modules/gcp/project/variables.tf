@@ -256,3 +256,14 @@ variable "audit_logs_lifecycle_age" {
   default     = 365 # 1 year
   description = "The age of audit logs in days before applying lifecycle rules."
 }
+
+variable "cloud_armor_tier" {
+  type        = string
+  default     = null
+  description = "Managed protection tier to be set. Possible values are: CA_STANDARD, CA_ENTERPRISE_PAYGO. Defaults to `null`."
+
+  validation {
+    condition     = contains(["CA_STANDARD", "CA_ENTERPRISE_PAYGO", null], var.cloud_armor_tier)
+    error_message = "Invalid value for cloud_armor_tier. Must be one of: `CA_STANDARD`, `CA_ENTERPRISE_PAYGO`, `null`."
+  }
+}
