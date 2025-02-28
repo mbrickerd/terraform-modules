@@ -66,7 +66,7 @@ jobs:
 
       - name: Publish GCP package
         if: steps.changes.outputs.gcp == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-gcp-modules-${{ steps.gcp_version.outputs.version }}
           path: modules/gcp/terraform-gcp-modules-${{ steps.gcp_version.outputs.version }}.zip
@@ -74,7 +74,7 @@ jobs:
 
       - name: Publish Azure package
         if: steps.changes.outputs.azure == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-azure-modules-${{ steps.azure_version.outputs.version }}
           path: modules/azure/terraform-azure-modules-${{ steps.azure_version.outputs.version }}.zip
