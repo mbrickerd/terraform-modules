@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   packages: write
+  pull-requests: read
 
 jobs:
   release:
@@ -17,19 +18,29 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Detect changed modules
-        id: changes
-        uses: dorny/paths-filter@v2
         with:
-          filters: |
-            gcp:
-              - 'modules/gcp/**'
-            azure:
-              - 'modules/azure/**'
+          fetch-depth: 0
+
+      - name: Check for GCP changes
+        id: gcp_check
+        run: |
+          if git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -q "^modules/gcp/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for Azure changes
+        id: azure_check
+        run: |
+          if git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -q "^modules/azure/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get GCP version
-        if: steps.changes.outputs.gcp == 'true'
+        if: steps.gcp_check.outputs.changed == 'true'
         id: gcp_version
         run: |
           VERSION=$(grep -oP 'module_version\s*=\s*"\K[^"]+' modules/gcp/versions.tf || echo "0.1.0")
@@ -39,7 +50,7 @@ jobs:
           fi
 
       - name: Get Azure version
-        if: steps.changes.outputs.azure == 'true'
+        if: steps.azure_check.outputs.changed == 'true'
         id: azure_version
         run: |
           VERSION=$(grep -oP 'module_version\s*=\s*"\K[^"]+' modules/azure/versions.tf || echo "0.1.0")
@@ -49,7 +60,7 @@ jobs:
           fi
 
       - name: Package GCP module
-        if: steps.changes.outputs.gcp == 'true'
+        if: steps.gcp_check.outputs.changed == 'true'
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
@@ -57,7 +68,7 @@ jobs:
           directory: 'modules/gcp'
 
       - name: Package Azure module
-        if: steps.changes.outputs.azure == 'true'
+        if: steps.azure_check.outputs.changed == 'true'
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
@@ -65,7 +76,7 @@ jobs:
           directory: 'modules/azure'
 
       - name: Publish GCP package
-        if: steps.changes.outputs.gcp == 'true'
+        if: steps.gcp_check.outputs.changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: terraform-gcp-modules-${{ steps.gcp_version.outputs.version }}
@@ -73,7 +84,7 @@ jobs:
           retention-days: 90
 
       - name: Publish Azure package
-        if: steps.changes.outputs.azure == 'true'
+        if: steps.azure_check.outputs.changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: terraform-azure-modules-${{ steps.azure_version.outputs.version }}
@@ -81,7 +92,7 @@ jobs:
           retention-days: 90
 
       - name: Create GCP release
-        if: steps.changes.outputs.gcp == 'true' && github.base_ref == 'main'
+        if: steps.gcp_check.outputs.changed == 'true' && github.base_ref == 'main'
         uses: softprops/action-gh-release@v1
         with:
           files: modules/gcp/terraform-gcp-modules-${{ steps.gcp_version.outputs.version }}.zip
@@ -90,7 +101,7 @@ jobs:
           generate_release_notes: true
 
       - name: Create Azure release
-        if: steps.changes.outputs.azure == 'true' && github.base_ref == 'main'
+        if: steps.azure_check.outputs.changed == 'true' && github.base_ref == 'main'
         uses: softprops/action-gh-release@v1
         with:
           files: modules/azure/terraform-azure-modules-${{ steps.azure_version.outputs.version }}.zip
