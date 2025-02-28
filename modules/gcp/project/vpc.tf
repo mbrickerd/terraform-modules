@@ -3,7 +3,7 @@ resource "time_sleep" "wait_5_seconds" {
   create_duration = var.vpc_service_control_sleep_duration
 
   depends_on = [
-    # google_access_context_manager_service_perimeter_resource.service_perimeter_attachment[0],
+    google_access_context_manager_service_perimeter_resource.service_perimeter_attachment[0],
     google_project_service.this[0]
   ]
 
