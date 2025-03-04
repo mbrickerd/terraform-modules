@@ -1,19 +1,19 @@
 output "bucket" {
-  value       = var.create_bucket ? google_storage_bucket.bucket[0] : null
-  description = "The created storage bucket."
+  value       = google_storage_bucket.bucket
+  description = "The created storage bucket resource."
 }
 
 output "name" {
-  value       = var.create_bucket ? google_storage_bucket.bucket[0].name : null
+  value       = google_storage_bucket.bucket.name
   description = "The name of the bucket."
 }
 
 output "url" {
-  value       = var.create_bucket ? google_storage_bucket.bucket[0].url : null
-  description = "The base URL of the bucket."
+  value       = "gs://${google_storage_bucket.bucket.name}"
+  description = "The base URL of the bucket, in the format `gs://<bucket-name>`."
 }
 
 output "self_link" {
-  value       = var.create_bucket ? google_storage_bucket.bucket[0].self_link : null
-  description = "The URI of the bucket."
+  value       = google_storage_bucket.bucket.self_link
+  description = "The URI of the created bucket."
 }

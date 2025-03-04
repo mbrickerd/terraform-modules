@@ -1,7 +1,6 @@
-variable "create_bucket" {
-  type        = bool
-  default     = true
-  description = "Whether to create a storage bucket. Defaults to `true`."
+variable "project_id" {
+  type        = string
+  description = "The ID of the project where the bucket will be created."
 }
 
 variable "name" {
@@ -9,69 +8,56 @@ variable "name" {
   description = "The name of the bucket."
 }
 
-variable "project_id" {
-  type        = string
-  description = "The ID of the project to create the bucket in."
-}
-
 variable "location" {
   type        = string
-  default     = "US"
+  default     = "europe-west4"
   description = "The location of the bucket."
 }
 
-variable "labels" {
-  type        = map(string)
-  default     = {}
-  description = "A mapping of labels to assign to the bucket."
-}
+variable "storage_class" {
+  type        = string
+  description = "The storage class of the bucket."
+  default     = "STANDARD"
 
-variable "force_destroy" {
-  type        = bool
-  default     = false
-  description = "When deleting a bucket, this boolean option will delete all contained objects. Defaults to `false`."
+  validation {
+    condition     = contains(["STANDARD", "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE", "ARCHIVE"], var.storage_class)
+    error_message = "Invalid value for storage_class. Must be one of: STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE."
+  }
 }
 
 variable "uniform_bucket_level_access" {
   type        = bool
   default     = true
-  description = "Whether to enable Uniform bucket-level access. Defaults to `true`."
+  description = "Enables uniform bucket-level access on a bucket. Defaults to `true`."
 }
 
-variable "public_access_prevention" {
-  type        = string
-  default     = "enforced"
-  description = "Prevents public access to a bucket. Defaults to `enforced`."
-
-  validation {
-    condition     = contains(["inherited", "enforced"], var.public_access_prevention)
-    error_message = "Insufficient value for public_access_prevention. Must be one of: `inherited`, `enforced`."
-  }
-}
-
-variable "versioning_enabled" {
+variable "force_destroy" {
   type        = bool
   default     = false
-  description = "Whether to enable versioning for the bucket."
+  description = "When deleting a bucket, this boolean option will delete all contained objects."
 }
 
-variable "retention_policy" {
-  type = object({
-    is_locked        = bool
-    retention_period = number
-  })
+variable "labels" {
+  type        = map(string)
+  default     = {}
+  description = "A set of key/value label pairs to assign to the bucket."
+}
+
+variable "versioning" {
+  type        = bool
   default     = null
-  description = "Configuration of the bucket's data retention policy. Default is `null`."
+  description = "Whether to enable versioning for this bucket."
 }
 
 variable "lifecycle_rules" {
   type = list(object({
     condition = object({
-      age                   = optional(number)
-      created_before        = optional(string)
-      with_state            = optional(string)
-      matches_storage_class = optional(list(string))
-      num_newer_versions    = optional(number)
+      age                        = optional(number)
+      created_before             = optional(string)
+      with_state                 = optional(string)
+      matches_storage_class      = optional(list(string))
+      num_newer_versions         = optional(number)
+      days_since_noncurrent_time = optional(number)
     })
     action = object({
       type          = string
@@ -79,7 +65,33 @@ variable "lifecycle_rules" {
     })
   }))
   default     = []
-  description = "List of lifecycle rules to configure."
+  description = "A list of lifecycle rules to configure."
+}
+
+variable "cors_configuration" {
+  type = object({
+    origin          = list(string)
+    method          = list(string)
+    response_header = list(string)
+    max_age_seconds = number
+  })
+  default     = null
+  description = "The CORS configuration for the bucket."
+}
+
+variable "encryption_key" {
+  type        = string
+  default     = null
+  description = "The Customer-Managed Encryption Key used to encrypt the bucket."
+}
+
+variable "retention_policy" {
+  type = object({
+    is_locked        = optional(bool, false)
+    retention_period = number
+  })
+  default     = null
+  description = "The configuration of the bucket's retention policy."
 }
 
 variable "logging" {
@@ -89,40 +101,4 @@ variable "logging" {
   })
   default     = null
   description = "The bucket's Access & Storage Logs configuration."
-}
-
-variable "group_id" {
-  type        = string
-  default     = ""
-  description = "The ID of the Google group to grant permissions to."
-}
-
-variable "group_iam_roles" {
-  type        = set(string)
-  default     = ["roles/storage.admin"]
-  description = "IAM roles to be granted to the Google group on the bucket."
-}
-
-variable "service_account_id" {
-  type        = string
-  default     = ""
-  description = "The ID of the service account to grant permissions to."
-}
-
-variable "service_account_iam_roles" {
-  type        = set(string)
-  default     = ["roles/storage.admin"]
-  description = "IAM roles to be granted to the service account on the bucket."
-}
-
-variable "api_service_account_id" {
-  type        = string
-  default     = ""
-  description = "The ID of the Google APIs service account to grant permissions to."
-}
-
-variable "api_service_account_iam_roles" {
-  type        = set(string)
-  default     = ["roles/storage.admin"]
-  description = "IAM roles to be granted to the Google APIs service account on the bucket."
 }
