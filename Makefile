@@ -1,5 +1,8 @@
 .PHONY: init format validate plan apply destroy clean setup all check package-gcp package-azure
 
+# Update MODULES to match your actual directory structure
+MODULES := $(shell find ./modules/azure ./modules/gcp -type d -not -path "*/\.*" | grep -v "modules/azure$$" | grep -v "modules/gcp$$")
+
 all: format validate docs
 
 init:
@@ -13,7 +16,12 @@ validate: init
 	@find ./modules -type d -name ".terraform" -prune -o -name "*.tf" -exec dirname {} \; | sort -u | xargs -I {} sh -c 'cd {} && terraform validate'
 
 docs:
-	@pre-commit run terraform_docs --all-files
+	@for d in $(MODULES); do \
+		if [ -f "$$d/main.tf" ]; then \
+			echo "Generating docs for $$d"; \
+			terraform-docs markdown $$d --output-file=README.md; \
+		fi; \
+	done
 
 check:
 	pre-commit run --all-files
