@@ -5,7 +5,8 @@ variable "dataset_id" {
 
 variable "location" {
   type        = string
-  description = "The location of the BigQuery dataset."
+  default     = "europe-west4"
+  description = "The location of the BigQuery dataset. Defaults to `europe-west4`."
 }
 
 variable "allow_deletion" {

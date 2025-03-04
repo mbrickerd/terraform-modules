@@ -10,7 +10,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 5.41, < 7 |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.24.0 |
 
 ## Modules
 
@@ -29,7 +29,7 @@ No modules.
 | <a name="input_allow_deletion"></a> [allow\_deletion](#input\_allow\_deletion) | Whether to allow deletion of the BigQuery dataset when tables are present. | `bool` | `false` | no |
 | <a name="input_dataset_id"></a> [dataset\_id](#input\_dataset\_id) | The ID of the BigQuery dataset. | `string` | n/a | yes |
 | <a name="input_labels"></a> [labels](#input\_labels) | Labels to apply to all applicable resources in this module. | `map(string)` | `{}` | no |
-| <a name="input_location"></a> [location](#input\_location) | The location of the BigQuery dataset. | `string` | n/a | yes |
+| <a name="input_location"></a> [location](#input\_location) | The location of the BigQuery dataset. Defaults to `europe-west4`. | `string` | `"europe-west4"` | no |
 | <a name="input_project"></a> [project](#input\_project) | Project where the BigQuery resources are being created. | `string` | `null` | no |
 
 ## Outputs
