@@ -1,13 +1,16 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.4.2 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | >= 5.41, < 7 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.24.0 |
 
 ## Modules
 
@@ -27,7 +30,7 @@ No modules.
 | <a name="input_encryption_key"></a> [encryption\_key](#input\_encryption\_key) | The Customer-Managed Encryption Key used to encrypt the bucket. | `string` | `null` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | When deleting a bucket, this boolean option will delete all contained objects. | `bool` | `false` | no |
 | <a name="input_labels"></a> [labels](#input\_labels) | A set of key/value label pairs to assign to the bucket. | `map(string)` | `{}` | no |
-| <a name="input_lifecycle_rules"></a> [lifecycle\_rules](#input\_lifecycle\_rules) | A list of lifecycle rules to configure. | <pre>list(object({<br/>    condition = object({<br/>      age                    = optional(number)<br/>      created_before         = optional(string)<br/>      with_state             = optional(string)<br/>      matches_storage_class  = optional(list(string))<br/>      num_newer_versions     = optional(number)<br/>      days_since_noncurrent_time = optional(number)<br/>    })<br/>    action = object({<br/>      type          = string<br/>      storage_class = optional(string)<br/>    })<br/>  }))</pre> | `[]` | no |
+| <a name="input_lifecycle_rules"></a> [lifecycle\_rules](#input\_lifecycle\_rules) | A list of lifecycle rules to configure. | <pre>list(object({<br/>    condition = object({<br/>      age                        = optional(number)<br/>      created_before             = optional(string)<br/>      with_state                 = optional(string)<br/>      matches_storage_class      = optional(list(string))<br/>      num_newer_versions         = optional(number)<br/>      days_since_noncurrent_time = optional(number)<br/>    })<br/>    action = object({<br/>      type          = string<br/>      storage_class = optional(string)<br/>    })<br/>  }))</pre> | `[]` | no |
 | <a name="input_location"></a> [location](#input\_location) | The location of the bucket. | `string` | `"europe-west4"` | no |
 | <a name="input_logging"></a> [logging](#input\_logging) | The bucket's Access & Storage Logs configuration. | <pre>object({<br/>    log_bucket        = string<br/>    log_object_prefix = optional(string)<br/>  })</pre> | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of the bucket. | `string` | n/a | yes |

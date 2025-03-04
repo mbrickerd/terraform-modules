@@ -10,7 +10,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 5.41, < 7 |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.24.0 |
 
 ## Modules
 
@@ -49,7 +49,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_job_ids"></a> [job\_ids](#output\_job\_ids) | Map of job names to their Dataflow job ID's. |
-| <a name="output_job_names"></a> [job\_names](#output\_job\_names) | Map of job keys to their names. |
-| <a name="output_job_states"></a> [job\_states](#output\_job\_states) | Map of job names to their current states. |
+| <a name="output_id"></a> [id](#output\_id) | The Dataflow job ID. |
+| <a name="output_name"></a> [name](#output\_name) | The name of the Dataflow job. |
+| <a name="output_state"></a> [state](#output\_state) | The current state of the Dataflow job. |
 <!-- END_TF_DOCS -->

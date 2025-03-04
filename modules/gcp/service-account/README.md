@@ -1,13 +1,16 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.4.2 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | >= 5.41, < 7 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.24.0 |
 
 ## Modules
 
@@ -26,7 +29,6 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The account ID for the service account. | `string` | n/a | yes |
-| <a name="input_artifact_registry_repositories"></a> [artifact\_registry\_repositories](#input\_artifact\_registry\_repositories) | Map of artifact registry repositories and their corresponding access roles. | <pre>map(object({<br/>    repository = string<br/>    location   = string<br/>    project    = string<br/>    roles      = list(string)<br/>  }))</pre> | `{}` | no |
 | <a name="input_description"></a> [description](#input\_description) | A description of the service account. | `string` | `null` | no |
 | <a name="input_display_name"></a> [display\_name](#input\_display\_name) | The display name for the service account. | `string` | `null` | no |
 | <a name="input_impersonation_enabled"></a> [impersonation\_enabled](#input\_impersonation\_enabled) | Whether to enable the service account impersonation feature. | `bool` | `false` | no |
